@@ -5,13 +5,13 @@ import fit
 
 
 def main():
-    # test_exp_Fit_1D()
-    # test_exp_FitX_2D()
-    # test_exp_FitY_2D()
-    # test_linear_Fit_1D()
-    # test_linear_FitX_2D()
-    # test_linear_FitY_2D()
-    test_sin_Fit_1D()
+    test_exp_Fit_1D()
+    test_exp_FitX_2D()
+    test_exp_FitY_2D()
+    test_linear_Fit_1D()
+    test_linear_FitX_2D()
+    test_linear_FitY_2D()
+    # test_sin_Fit_1D()
     print(1)
 
 
