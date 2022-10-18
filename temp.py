@@ -42,12 +42,12 @@ fidelity_line_reference_average=fidelity_line_reference_average/30.0
 fidelity_line_average=fidelity_line_average/30.0
 
 # 拟合
-parameters_ref, err_ref = fit.exp_Fit_1D(gate_num_line_reference, fidelity_line_reference_average)
+parameters_ref, err_ref = fit.exp_fit_1D(gate_num_line_reference, fidelity_line_reference_average)
 Pref=np.exp(parameters_ref[1])
 gate_num_line_reference_fit=np.arange(0, 13, 0.2)
 fidelity_line_reference_average_fit = parameters_ref[0]*np.exp(parameters_ref[1]*gate_num_line_reference_fit)+parameters_ref[2]
 
-parameters, err = fit.exp_Fit_1D(gate_num_line, fidelity_line_average)
+parameters, err = fit.exp_fit_1D(gate_num_line, fidelity_line_average)
 Pgate=np.exp(parameters_ref[1])
 gate_num_line_fit=np.arange(0, 13, 0.2)
 fidelity_line_average_fit = parameters[0]*np.exp(parameters[1]*gate_num_line_fit)+parameters[2]
