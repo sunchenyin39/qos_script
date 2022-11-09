@@ -3,10 +3,22 @@ from scipy import optimize
 
 
 def exp_fit_1D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None):
+    """Exponential function fitting.
+
+    Args:
+        x (list[float]): Independent variable list.
+        data (list[float]): Dependent variable list.
+        fitRangeMin (list[float], optional): The minimum values of the parameters to be fitted. Defaults to None.
+        fitRangeMax (list[float], optional): The maximum values of the parameters to be fitted. Defaults to None.
+        fitInitial (list[float], optional): The initial values of the parameters to be fitted. Defaults to None.
+
+    Returns:
+        tuple[list[float],list[float]]: The fist list is fitted parameters, the second list is the error list.
+
+    """    
     def target_func(x, a, b, c):
         return a * np.exp(b*x)+c
 
-    # make a guess if fitInitial parameters are not available
     if fitInitial is None:
         if (data[-1] < data[0]) and (data[-1] + data[0])/2 > data[round(len(data) / 2)]:
             fitInitial = [max(data)-min(data), -1.0 /
@@ -22,14 +34,28 @@ def exp_fit_1D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None):
                           x[round(len(x) / 2)], max(data)]
 
     parameters, covariance = optimize.curve_fit(
-        target_func, x, data, p0=fitInitial, bounds=(fitRangeMin, fitRangeMax), maxfev=500000)  # maxfev is the maximul times of iteration regression
+        target_func, x, data, p0=fitInitial, bounds=(fitRangeMin, fitRangeMax), maxfev=500000)
 
-    err = np.sqrt(np.diag(covariance)) * 1.96  # 95% confidence area
+    err = np.sqrt(np.diag(covariance)) * 1.96
 
     return parameters, err
 
 
 def exp_fit_2D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None, mode="row"):
+    """Exponential function fitting. According the fist 
+
+    Args:
+        x (list(list[float])): Independent variable list.
+        data (list(list[float])): Dependent variable list.
+        fitRangeMin (list(list[float]), optional): The minimum values of the parameters to be fitted. Defaults to None.
+        fitRangeMax (list(list[float]), optional): The maximum values of the parameters to be fitted. Defaults to None.
+        fitInitial (list(list[float]), optional): The initial values of the parameters to be fitted. Defaults to None.
+        mode (str, optional): _description_. Defaults to "row".
+
+    Returns:
+        tuple[list[float],list[float]]: The fist list is fitted parameters, the second list is the error list.
+
+    """    
     def exp_fitX_2D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None):
         parameters = []
         err = []
@@ -52,6 +78,15 @@ def exp_fit_2D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None, mod
 
 
 def linear_fit_1D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None):
+    """_summary_
+
+    Args:
+        x (_type_): _description_
+        data (_type_): _description_
+        fitRangeMin (_type_, optional): _description_. Defaults to None.
+        fitRangeMax (_type_, optional): _description_. Defaults to None.
+        fitInitial (_type_, optional): _description_. Defaults to None.
+    """    
     def target_func(x, a, b):
         return a * x+b
     if fitInitial is None:
@@ -59,11 +94,21 @@ def linear_fit_1D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None):
                       (data[-1]-data[0])/(x[-1]-x[0])*x[0]]
     parameters, covariance = optimize.curve_fit(
         target_func, x, data, p0=fitInitial, bounds=(fitRangeMin, fitRangeMax), maxfev=500000)
-    err = np.sqrt(np.diag(covariance)) * 1.96  # 95% confidence area
+    err = np.sqrt(np.diag(covariance)) * 1.96  
     return parameters, err
 
 
 def linear_fit_2D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None, mode="row"):
+    """_summary_
+
+    Args:
+        x (_type_): _description_
+        data (_type_): _description_
+        fitRangeMin (_type_, optional): _description_. Defaults to None.
+        fitRangeMax (_type_, optional): _description_. Defaults to None.
+        fitInitial (_type_, optional): _description_. Defaults to None.
+        mode (str, optional): _description_. Defaults to "row".
+    """    
     def linear_fitX_2D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=None):
         parameters = []
         err = []
@@ -107,7 +152,7 @@ def sin_fit_1D(x, data, freqmagnitude=None, fitRangeMin=None, fitRangeMax=None, 
 
     x = np.array(x)
     x = x*freqmagnitude
-    # make a guess if initial parameters are not available
+    
     if fitInitial is None:
         if np.argmax(data) == len(data) - 1:
             freq = 1/np.pi/x[-1]
@@ -119,7 +164,7 @@ def sin_fit_1D(x, data, freqmagnitude=None, fitRangeMin=None, fitRangeMax=None, 
 
     parameters, covariance = optimize.curve_fit(
         target_func, x, data, p0=fitInitial, maxfev=500000)
-    err = np.sqrt(np.diag(covariance)) * 1.96  # 95% confidence area
+    err = np.sqrt(np.diag(covariance)) * 1.96  
 
     if err[1] > abs(parameters[1])*0.1:
         errlist = []
@@ -129,7 +174,7 @@ def sin_fit_1D(x, data, freqmagnitude=None, fitRangeMin=None, fitRangeMax=None, 
             fitInitial[1] = 1.0/(2*np.pi*x[ii])
             parameters, covariance = optimize.curve_fit(
                 target_func, x, data, p0=fitInitial, maxfev=500000)
-            err = np.sqrt(np.diag(covariance)) * 1.96  # 95% confidence area
+            err = np.sqrt(np.diag(covariance)) * 1.96  
             errlist.append(err)
             parmlist.append(parameters)
 
@@ -180,20 +225,20 @@ def sin_decay_fit_1D(x, data, freqmagnitude=None, fitRangeMin=None, fitRangeMax=
 
     x = np.array(x)
     x = x*freqmagnitude
-    # make a guess if initial parameters are not available
+    
     if fitInitial is None:
         if np.argmax(data) == len(data) - 1:
             freq = 1/np.pi/x[-1]
         else:
             freq = guess_freq(x, data)
-        # amp = np.std(data) * 2.0 ** 0.5
+        
         amp = (np.max(data)-np.min(data))/2
         offset = np.mean(data)
         fitInitial = [amp, freq, -1.0/x[-1], offset, -np.pi/2]
 
     parameters, covariance = optimize.curve_fit(
         target_func, x, data, p0=fitInitial, maxfev=500000)
-    err = np.sqrt(np.diag(covariance)) * 1.96  # 95% confidence area
+    err = np.sqrt(np.diag(covariance)) * 1.96  
     if err[1] > abs(parameters[1])*0.1 and len(data) > 5:
         errlist = []
         parmlist = []
@@ -202,7 +247,7 @@ def sin_decay_fit_1D(x, data, freqmagnitude=None, fitRangeMin=None, fitRangeMax=
             fitInitial[1] = x[ii]
             parameters, covariance = optimize.curve_fit(
                 target_func, x, data, p0=fitInitial, maxfev=500000)
-            err = np.sqrt(np.diag(covariance)) * 1.96  # 95% confidence area
+            err = np.sqrt(np.diag(covariance)) * 1.96  
             errlist.append(err)
             parmlist.append(parameters)
             y2 = [target_func(i, parameters[0], parameters[1],
@@ -250,7 +295,7 @@ def quadratic_fit_1D(x, data, fitRangeMin=None, fitRangeMax=None, fitInitial=Non
         return a * x * x + b * x + c
     parameters, covariance = optimize.curve_fit(
         target_func, x, data, p0=fitInitial, bounds=(fitRangeMin, fitRangeMax), maxfev=500000)
-    err = np.sqrt(np.diag(covariance)) * 1.96  # 95% confidence area
+    err = np.sqrt(np.diag(covariance)) * 1.96  
     return parameters, err
 
 
