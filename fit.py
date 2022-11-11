@@ -2,7 +2,7 @@ import numpy as np
 from scipy import optimize
 
 
-def exp_fit_1D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
+def exp_fit_1d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
     """Exponential function fitting. data = a * exp( b * x ) + c
 
 
@@ -42,7 +42,7 @@ def exp_fit_1D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None
     return parameters, err
 
 
-def exp_fit_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
+def exp_fit_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
     """Exponential function fitting. data = a * exp( b * x ) + c
     If the first letter of mode was 'r', each row of data would be fitted once, 
     else each column of data would be fitted once.
@@ -60,28 +60,28 @@ def exp_fit_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None
         tuple[list[list[float]],list[list[float]]]: The fist list is fitted parameters, the second list is the error list.
 
     """
-    def exp_fitX_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
+    def exp_fit_x_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
         parameters = []
         err = []
         for i in range(len(x)):
-            parameters_temp, err_temp = exp_fit_1D(
+            parameters_temp, err_temp = exp_fit_1d(
                 x[i], data[i], fit_range_min, fit_range_max, fit_initial)
             parameters.append(parameters_temp)
             err.append(err_temp)
         return parameters, err
     if mode[0] == 'r':
-        parameters, err = exp_fitX_2D(
+        parameters, err = exp_fit_x_2d(
             x, data, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
     else:
         x = np.transpose(np.array(x)).tolist()
         data = np.transpose(np.array(data)).tolist()
-        parameters, err = exp_fitX_2D(
+        parameters, err = exp_fit_x_2d(
             x, data, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
 
 
-def linear_fit_1D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
+def linear_fit_1d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
     """Linear function fitting. data = a * x + b
 
 
@@ -107,7 +107,7 @@ def linear_fit_1D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=N
     return parameters, err
 
 
-def linear_fit_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
+def linear_fit_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
     """Linear function fitting. data = a * x + b
     If the first letter of mode was 'r', each row of data would be fitted once, 
     else each column of data would be fitted once.
@@ -125,23 +125,23 @@ def linear_fit_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=N
         tuple[list[list[float]],list[list[float]]]: The fist list is fitted parameters, the second list is the error list.
 
     """
-    def linear_fitX_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
+    def linear_fit_x_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
         parameters = []
         err = []
         for i in range(len(x)):
-            parameters_temp, err_temp = linear_fit_1D(
+            parameters_temp, err_temp = linear_fit_1d(
                 x[i], data[i], fit_range_min, fit_range_max, fit_initial)
             parameters.append(parameters_temp)
             err.append(err_temp)
         return parameters, err
     if mode[0] == 'r':
-        parameters, err = linear_fitX_2D(
+        parameters, err = linear_fit_x_2d(
             x, data, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
     else:
         x = np.transpose(np.array(x)).tolist()
         data = np.transpose(np.array(data)).tolist()
-        parameters, err = linear_fitX_2D(
+        parameters, err = linear_fit_x_2d(
             x, data, fit_range_min, fit_range_max, fit_initial)
     return parameters, err
 
@@ -160,7 +160,7 @@ def guess_freq(x, y):
     return guess
 
 
-def sin_fit_1D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
+def sin_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
     """Sinusoidal function fitting. data = a * sin( 2 * pi * b * x + phi) + c
 
 
@@ -221,7 +221,7 @@ def sin_fit_1D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=No
     return parameters, err
 
 
-def sin_fit_2D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
+def sin_fit_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
     """Sinusoidal function fitting. data = a * sin( 2 * pi * b * x + phi) + c
     If the first letter of mode was 'r', each row of data would be fitted once, 
     else each column of data would be fitted once.
@@ -239,32 +239,32 @@ def sin_fit_2D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=No
         tuple[list[list[float]],list[list[float]]]: The fist list is fitted parameters, the second list is the error list.
 
     """
-    def sin_fitX_2D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
+    def sin_fit_x_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
         parameters = []
         err = []
         for i in range(len(x)):
             if freqmagnitude is None:
-                parameters_temp, err_temp = sin_fit_1D(
+                parameters_temp, err_temp = sin_fit_1d(
                     x[i], data[i], 1e6, fit_range_min, fit_range_max, fit_initial)
             else:
-                parameters_temp, err_temp = sin_fit_1D(
+                parameters_temp, err_temp = sin_fit_1d(
                     x[i], data[i], freqmagnitude[i], fit_range_min, fit_range_max, fit_initial)
             parameters.append(parameters_temp)
             err.append(err_temp)
         return parameters, err
     if mode[0] == 'r':
-        parameters, err = sin_fitX_2D(
+        parameters, err = sin_fit_x_2d(
             x, data, freqmagnitude, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
     else:
         x = np.transpose(np.array(x)).tolist()
         data = np.transpose(np.array(data)).tolist()
-        parameters, err = sin_fitX_2D(
+        parameters, err = sin_fit_x_2d(
             x, data, freqmagnitude, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
 
 
-def sin_decay_fit_1D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
+def sin_decay_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
     """Sinusoidal exponential decay function fitting. data = a * sin(2 * pi * b * x + phi) * exp(c * x) + d
 
 
@@ -325,7 +325,7 @@ def sin_decay_fit_1D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_
     return parameters, err
 
 
-def sin_decay_fit_2D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
+def sin_decay_fit_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
     """Sinusoidal exponential decay function fitting. data = a * sin(2 * pi * b * x + phi) * exp(c * x) + d
     If the first letter of mode was 'r', each row of data would be fitted once, 
     else each column of data would be fitted once.
@@ -343,32 +343,32 @@ def sin_decay_fit_2D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_
         tuple[list[list[float]],list[list[float]]]: The fist list is fitted parameters, the second list is the error list.
 
     """
-    def sin_decay_fitX_2D(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
+    def sin_decay_fit_x_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
         parameters = []
         err = []
         for i in range(len(x)):
             if freqmagnitude is None:
-                parameters_temp, err_temp = sin_decay_fit_1D(
+                parameters_temp, err_temp = sin_decay_fit_1d(
                     x[i], data[i], 1e6, fit_range_min, fit_range_max, fit_initial)
             else:
-                parameters_temp, err_temp = sin_decay_fit_1D(
+                parameters_temp, err_temp = sin_decay_fit_1d(
                     x[i], data[i], freqmagnitude[i], fit_range_min, fit_range_max, fit_initial)
             parameters.append(parameters_temp)
             err.append(err_temp)
         return parameters, err
     if mode[0] == 'r':
-        parameters, err = sin_decay_fitX_2D(
+        parameters, err = sin_decay_fit_x_2d(
             x, data, freqmagnitude, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
     else:
         x = np.transpose(np.array(x)).tolist()
         data = np.transpose(np.array(data)).tolist()
-        parameters, err = sin_decay_fitX_2D(
+        parameters, err = sin_decay_fit_x_2d(
             x, data, freqmagnitude, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
 
 
-def quadratic_fit_1D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
+def quadratic_fit_1d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
     """Quadratic function fitting. data = a * x * x + b * x + c
 
 
@@ -391,7 +391,7 @@ def quadratic_fit_1D(x, data, fit_range_min=None, fit_range_max=None, fit_initia
     return parameters, err
 
 
-def quadratic_fit_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
+def quadratic_fit_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
     """Quadratic function fitting. data = a * x * x + b * x + c
     If the first letter of mode was 'r', each row of data would be fitted once, 
     else each column of data would be fitted once.
@@ -409,22 +409,22 @@ def quadratic_fit_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initia
         tuple[list[list[float]],list[list[float]]]: The fist list is fitted parameters, the second list is the error list.
 
     """
-    def quadratic_fitX_2D(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
+    def quadratic_fit_x_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None):
         parameters = []
         err = []
         for i in range(len(x)):
-            parameters_temp, err_temp = quadratic_fit_1D(
+            parameters_temp, err_temp = quadratic_fit_1d(
                 x[i], data[i], fit_range_min, fit_range_max, fit_initial)
             parameters.append(parameters_temp)
             err.append(err_temp)
         return parameters, err
     if mode[0] == 'r':
-        parameters, err = quadratic_fitX_2D(
+        parameters, err = quadratic_fit_x_2d(
             x, data, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
     else:
         x = np.transpose(np.array(x)).tolist()
         data = np.transpose(np.array(data)).tolist()
-        parameters, err = quadratic_fitX_2D(
+        parameters, err = quadratic_fit_x_2d(
             x, data, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
