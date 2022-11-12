@@ -50,9 +50,9 @@ def exp_fit_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=None
     Args:
         x (list(list[float])): Independent variable list.
         data (list(list[float])): Dependent variable list.
-        fit_range_min (list(list[float]), optional): The minimum values of the parameters to be fitted. Defaults to None.
-        fit_range_max (list(list[float]), optional): The maximum values of the parameters to be fitted. Defaults to None.
-        fit_initial (list(list[float]), optional): The initial values of the parameters to be fitted. Defaults to None.
+        fit_range_min (list[float], optional): The minimum values of the parameters to be fitted. Defaults to None.
+        fit_range_max (list[float], optional): The maximum values of the parameters to be fitted. Defaults to None.
+        fit_initial (list[float], optional): The initial values of the parameters to be fitted. Defaults to None.
         mode (str, optional): If the first letter of mode was 'r', each row of data would be fitted once, 
             else each column of data would be fitted once. Defaults to "row".
 
@@ -115,9 +115,9 @@ def linear_fit_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initial=N
     Args:
         x (list(list[float])): Independent variable list.
         data (list(list[float])): Dependent variable list.
-        fit_range_min (list(list[float]), optional): The minimum values of the parameters to be fitted. Defaults to None.
-        fit_range_max (list(list[float]), optional): The maximum values of the parameters to be fitted. Defaults to None.
-        fit_initial (list(list[float]), optional): The initial values of the parameters to be fitted. Defaults to None.
+        fit_range_min (list[float], optional): The minimum values of the parameters to be fitted. Defaults to None.
+        fit_range_max (list[float], optional): The maximum values of the parameters to be fitted. Defaults to None.
+        fit_initial (list[float], optional): The initial values of the parameters to be fitted. Defaults to None.
         mode (str, optional): If the first letter of mode was 'r', each row of data would be fitted once, 
             else each column of data would be fitted once. Defaults to "row".
 
@@ -160,13 +160,14 @@ def guess_freq(x, y):
     return guess
 
 
-def sin_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
+def sin_fit_1d(x, data, freq_magnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
     """Sinusoidal function fitting. data = a * sin( 2 * pi * b * x + phi) + c
 
 
     Args:
         x (list[float]): Independent variable list.
         data (list[float]): Dependent variable list.
+        freq_magnitude (float, optional): Order of frequency eg. 1e6(MHz).
         fit_range_min (list[float], optional): The minimum values of the parameters to be fitted which has the form of [a_min , b_min , c_min , phi_min]. Defaults to None.
         fit_range_max (list[float], optional): The maximum values of the parameters to be fitted which has the form of [a_max , b_max , c_max , phi_max]. Defaults to None.
         fit_initial (list[float], optional): The initial values of the parameters to be fitted which has the form of [a_init , b_init , c_init , phi_init]. Defaults to None.
@@ -177,11 +178,11 @@ def sin_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=No
     """
     def target_func(x, a, b, c, phi):
         return a * np.sin(2*np.pi*b*x + phi) + c
-    if freqmagnitude is None:
-        freqmagnitude = 1e6
+    if freq_magnitude is None:
+        freq_magnitude = 1e6
 
     x = np.array(x)
-    x = x*freqmagnitude
+    x = x*freq_magnitude
 
     if fit_initial is None:
         if np.argmax(data) == len(data) - 1:
@@ -193,7 +194,7 @@ def sin_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=No
         fit_initial = [amp, freq, offset, -np.pi/2]
 
     parameters, covariance = optimize.curve_fit(
-        target_func, x, data, p0=fit_initial, maxfev=500000)
+        target_func, x, data, p0=fit_initial, bounds=(fit_range_min, fit_range_max), maxfev=500000)
     err = np.sqrt(np.diag(covariance)) * 1.96
 
     if err[1] > abs(parameters[1])*0.1:
@@ -203,7 +204,7 @@ def sin_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=No
         for ii in range(5, len(data)):
             fit_initial[1] = 1.0/(2*np.pi*x[ii])
             parameters, covariance = optimize.curve_fit(
-                target_func, x, data, p0=fit_initial, maxfev=500000)
+                target_func, x, data, p0=fit_initial, bounds=(fit_range_min, fit_range_max), maxfev=500000)
             err = np.sqrt(np.diag(covariance)) * 1.96
             errlist.append(err)
             parmlist.append(parameters)
@@ -217,11 +218,11 @@ def sin_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=No
         idx = np.argmin(variance)
         parameters = parmlist[idx]
         err = errlist[idx]
-    parameters[1] = parameters[1]*freqmagnitude
+    parameters[1] = parameters[1]*freq_magnitude
     return parameters, err
 
 
-def sin_fit_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
+def sin_fit_2d(x, data, freq_magnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
     """Sinusoidal function fitting. data = a * sin( 2 * pi * b * x + phi) + c
     If the first letter of mode was 'r', each row of data would be fitted once, 
     else each column of data would be fitted once.
@@ -229,9 +230,10 @@ def sin_fit_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=No
     Args:
         x (list(list[float])): Independent variable list.
         data (list(list[float])): Dependent variable list.
-        fit_range_min (list(list[float]), optional): The minimum values of the parameters to be fitted. Defaults to None.
-        fit_range_max (list(list[float]), optional): The maximum values of the parameters to be fitted. Defaults to None.
-        fit_initial (list(list[float]), optional): The initial values of the parameters to be fitted. Defaults to None.
+        freq_magnitude (list[float], optional): Order of frequency eg. 1e6(MHz).
+        fit_range_min (list[float], optional): The minimum values of the parameters to be fitted. Defaults to None.
+        fit_range_max (list[float], optional): The maximum values of the parameters to be fitted. Defaults to None.
+        fit_initial (list[float], optional): The initial values of the parameters to be fitted. Defaults to None.
         mode (str, optional): If the first letter of mode was 'r', each row of data would be fitted once, 
             else each column of data would be fitted once. Defaults to "row".
 
@@ -239,38 +241,39 @@ def sin_fit_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=No
         tuple[list[list[float]],list[list[float]]]: The fist list is fitted parameters, the second list is the error list.
 
     """
-    def sin_fit_x_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
+    def sin_fit_x_2d(x, data, freq_magnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
         parameters = []
         err = []
         for i in range(len(x)):
-            if freqmagnitude is None:
+            if freq_magnitude is None:
                 parameters_temp, err_temp = sin_fit_1d(
                     x[i], data[i], 1e6, fit_range_min, fit_range_max, fit_initial)
             else:
                 parameters_temp, err_temp = sin_fit_1d(
-                    x[i], data[i], freqmagnitude[i], fit_range_min, fit_range_max, fit_initial)
+                    x[i], data[i], freq_magnitude[i], fit_range_min, fit_range_max, fit_initial)
             parameters.append(parameters_temp)
             err.append(err_temp)
         return parameters, err
     if mode[0] == 'r':
         parameters, err = sin_fit_x_2d(
-            x, data, freqmagnitude, fit_range_min, fit_range_max, fit_initial)
+            x, data, freq_magnitude, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
     else:
         x = np.transpose(np.array(x)).tolist()
         data = np.transpose(np.array(data)).tolist()
         parameters, err = sin_fit_x_2d(
-            x, data, freqmagnitude, fit_range_min, fit_range_max, fit_initial)
+            x, data, freq_magnitude, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
 
 
-def sin_decay_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
+def sin_decay_fit_1d(x, data, freq_magnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
     """Sinusoidal exponential decay function fitting. data = a * sin(2 * pi * b * x + phi) * exp(c * x) + d
 
 
     Args:
         x (list[float]): Independent variable list.
         data (list[float]): Dependent variable list.
+        freq_magnitude (float, optional): Order of frequency eg. 1e6(MHz).
         fit_range_min (list[float], optional): The minimum values of the parameters to be fitted which has the form of [a_min , b_min , c_min , d_min , phi_min]. Defaults to None.
         fit_range_max (list[float], optional): The maximum values of the parameters to be fitted which has the form of [a_max , b_max , c_max , d_max , phi_max]. Defaults to None.
         fit_initial (list[float], optional): The initial values of the parameters to be fitted which has the form of [a_init , b_init , c_init , d_init , phi_init]. Defaults to None.
@@ -281,11 +284,11 @@ def sin_decay_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_
     """
     def target_func(x, a, b, c, d, phi):
         return a * np.sin(2*np.pi*b*x + phi)*np.exp(c*x) + d
-    if freqmagnitude is None:
-        freqmagnitude = 1e6
+    if freq_magnitude is None:
+        freq_magnitude = 1e6
 
     x = np.array(x)
-    x = x*freqmagnitude
+    x = x*freq_magnitude
 
     if fit_initial is None:
         if np.argmax(data) == len(data) - 1:
@@ -298,7 +301,7 @@ def sin_decay_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_
         fit_initial = [amp, freq, -1.0/x[-1], offset, -np.pi/2]
 
     parameters, covariance = optimize.curve_fit(
-        target_func, x, data, p0=fit_initial, maxfev=500000)
+        target_func, x, data, p0=fit_initial, bounds=(fit_range_min, fit_range_max), maxfev=500000)
     err = np.sqrt(np.diag(covariance)) * 1.96
     if err[1] > abs(parameters[1])*0.1 and len(data) > 5:
         errlist = []
@@ -307,7 +310,7 @@ def sin_decay_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_
         for ii in range(5, len(data)):
             fit_initial[1] = x[ii]
             parameters, covariance = optimize.curve_fit(
-                target_func, x, data, p0=fit_initial, maxfev=500000)
+                target_func, x, data, p0=fit_initial, bounds=(fit_range_min, fit_range_max), maxfev=500000)
             err = np.sqrt(np.diag(covariance)) * 1.96
             errlist.append(err)
             parmlist.append(parameters)
@@ -320,12 +323,12 @@ def sin_decay_fit_1d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_
         idx = np.argmin(variance)
         parameters = parmlist[idx]
         err = errlist[idx]
-    parameters[1] = parameters[1]*freqmagnitude
-    parameters[2] = parameters[2]*freqmagnitude
+    parameters[1] = parameters[1]*freq_magnitude
+    parameters[2] = parameters[2]*freq_magnitude
     return parameters, err
 
 
-def sin_decay_fit_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
+def sin_decay_fit_2d(x, data, freq_magnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None, mode="row"):
     """Sinusoidal exponential decay function fitting. data = a * sin(2 * pi * b * x + phi) * exp(c * x) + d
     If the first letter of mode was 'r', each row of data would be fitted once, 
     else each column of data would be fitted once.
@@ -333,9 +336,10 @@ def sin_decay_fit_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_
     Args:
         x (list(list[float])): Independent variable list.
         data (list(list[float])): Dependent variable list.
-        fit_range_min (list(list[float]), optional): The minimum values of the parameters to be fitted. Defaults to None.
-        fit_range_max (list(list[float]), optional): The maximum values of the parameters to be fitted. Defaults to None.
-        fit_initial (list(list[float]), optional): The initial values of the parameters to be fitted. Defaults to None.
+        freq_magnitude (list[float], optional): Order of frequency eg. 1e6(MHz).
+        fit_range_min (list[float], optional): The minimum values of the parameters to be fitted. Defaults to None.
+        fit_range_max (list[float], optional): The maximum values of the parameters to be fitted. Defaults to None.
+        fit_initial (list[float], optional): The initial values of the parameters to be fitted. Defaults to None.
         mode (str, optional): If the first letter of mode was 'r', each row of data would be fitted once, 
             else each column of data would be fitted once. Defaults to "row".
 
@@ -343,28 +347,28 @@ def sin_decay_fit_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_
         tuple[list[list[float]],list[list[float]]]: The fist list is fitted parameters, the second list is the error list.
 
     """
-    def sin_decay_fit_x_2d(x, data, freqmagnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
+    def sin_decay_fit_x_2d(x, data, freq_magnitude=None, fit_range_min=None, fit_range_max=None, fit_initial=None):
         parameters = []
         err = []
         for i in range(len(x)):
-            if freqmagnitude is None:
+            if freq_magnitude is None:
                 parameters_temp, err_temp = sin_decay_fit_1d(
                     x[i], data[i], 1e6, fit_range_min, fit_range_max, fit_initial)
             else:
                 parameters_temp, err_temp = sin_decay_fit_1d(
-                    x[i], data[i], freqmagnitude[i], fit_range_min, fit_range_max, fit_initial)
+                    x[i], data[i], freq_magnitude[i], fit_range_min, fit_range_max, fit_initial)
             parameters.append(parameters_temp)
             err.append(err_temp)
         return parameters, err
     if mode[0] == 'r':
         parameters, err = sin_decay_fit_x_2d(
-            x, data, freqmagnitude, fit_range_min, fit_range_max, fit_initial)
+            x, data, freq_magnitude, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
     else:
         x = np.transpose(np.array(x)).tolist()
         data = np.transpose(np.array(data)).tolist()
         parameters, err = sin_decay_fit_x_2d(
-            x, data, freqmagnitude, fit_range_min, fit_range_max, fit_initial)
+            x, data, freq_magnitude, fit_range_min, fit_range_max, fit_initial)
         return parameters, err
 
 
@@ -399,9 +403,9 @@ def quadratic_fit_2d(x, data, fit_range_min=None, fit_range_max=None, fit_initia
     Args:
         x (list(list[float])): Independent variable list.
         data (list(list[float])): Dependent variable list.
-        fit_range_min (list(list[float]), optional): The minimum values of the parameters to be fitted. Defaults to None.
-        fit_range_max (list(list[float]), optional): The maximum values of the parameters to be fitted. Defaults to None.
-        fit_initial (list(list[float]), optional): The initial values of the parameters to be fitted. Defaults to None.
+        fit_range_min (list[float], optional): The minimum values of the parameters to be fitted. Defaults to None.
+        fit_range_max (list[float], optional): The maximum values of the parameters to be fitted. Defaults to None.
+        fit_initial (list[float], optional): The initial values of the parameters to be fitted. Defaults to None.
         mode (str, optional): If the first letter of mode was 'r', each row of data would be fitted once, 
             else each column of data would be fitted once. Defaults to "row".
 

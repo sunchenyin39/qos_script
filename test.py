@@ -381,7 +381,7 @@ def test_sin_decay_fit_1d():
     fig, ax = plt.subplots()
     ax.plot(x, y, 'b-')
     # 调用sin_decay_fit_1d拟合实验数据
-    parameters, err = fit.sin_decay_fit_1d(x, y, 1e9)
+    parameters, err = fit.sin_decay_fit_1d(x, y, 1e9,[-20,-20,-1e9,-20,-20],[+20,1e10,1e3,+20,+20])
     y_fit = [target_func(a, *parameters) for a in x]
     # 画图
     ax.plot(x, y_fit, 'g')
